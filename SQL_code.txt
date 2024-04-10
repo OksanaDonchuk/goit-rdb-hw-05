@@ -1,0 +1,42 @@
+1.
+USE hw3;
+
+SELECT * ,
+(SELECT customer_id FROM orders WHERE id = order_details.order_id) as customer_id
+FROM order_details;
+
+2.
+SELECT * FROM order_details as od
+WHERE order_id IN (SELECT id FROM orders WHERE shipper_id = 3);
+
+3.
+SELECT order_id, AVG(quantity) as average_quantity
+FROM (SELECT * FROM order_details WHERE quantity > 10) as temp_table
+GROUP BY order_id;
+
+4.
+WITH TemporalTable as (
+SELECT *
+FROM order_details
+WHERE quantity > 10
+)
+SELECT order_id, AVG(quantity) as average_quantity
+FROM TemporalTable
+GROUP BY order_id;
+
+5.
+DROP FUNCTION IF EXISTS Divider;
+DELIMITER //
+CREATE FUNCTION Divider(num_1 FLOAT, num_2 FLOAT)
+RETURNS FLOAT
+DETERMINISTIC
+NO SQL
+BEGIN
+DECLARE result FLOAT;
+SET result = num_1/num_2;
+RETURN result;
+END//
+DELIMITER ;
+
+SELECT *, Divider(quantity, 5) as div_result
+FROM order_details;
